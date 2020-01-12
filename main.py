@@ -13,7 +13,8 @@
 # limitations under the License.
 
 # [START gae_python37_app]
-from flask import Flask
+from flask import Flask, Markup, render_template
+import pymongo
 
 
 # If `entrypoint` is not defined in app.yaml, App Engine will look for an app
@@ -24,7 +25,19 @@ app = Flask(__name__)
 @app.route('/')
 def hello():
     """Return a friendly HTTP greeting."""
-    return 'Hello World!'
+
+    client = pymongo.MongoClient(
+        "mongodb+srv://Cizor:best123@cluster0-wazd4.gcp.mongodb.net/test?retryWrites=true&w=majority")
+
+    b = client.list_database_names()
+
+    c = client.sample_mflix
+    d = c.comments
+    response = "<h1>These are sample comments</h1><br>"
+    for i in d.find():
+        response += f"<h4>By {i['name']}</h4><h5>{i['text']}</h5><br>"
+
+    return render_template("index.html", response=Markup(response))
 
 
 if __name__ == '__main__':
